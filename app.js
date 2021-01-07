@@ -8,6 +8,6 @@ app.get('/word/get', (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://192.249.18.224`)
+    console.log(`Example app listening at http://192.249.18.216`)
 })
 
