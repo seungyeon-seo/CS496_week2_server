@@ -1,0 +1,22 @@
+{
+  "name": "cs496_week2_server",
+  "version": "1.0.0",
+  "description": "CS496 immersion camp server file for android client",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seungyeon-seo/CS496_week2_server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/seungyeon-seo/CS496_week2_server/issues"
+  },
+  "homepage": "https://github.com/seungyeon-seo/CS496_week2_server#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
