@@ -13,10 +13,14 @@ const postSchema = new mongoose.Schema({
         required: true
     },
 
-    id: {
+    author: {
         type: String,
-        unique: true,
-        required: true
+        required: true,        
+    },
+
+    created_at: {
+        type: Date,
+        required: true,
     }
 })
 

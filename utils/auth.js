@@ -14,12 +14,6 @@ env.config()
 const verifyUri = "https://graph.facebook.com/debug_token" 
 
 const getRequestOptions = (input_token) => {
-    // if (`${process.env.APP_ID}|${process.env.APP_TOKEN}` == APP_TOKEN)
-    //     console.log("앱 토큰 확인 완료!")
-    // else {
-    //     console.log("잘못된 앱 토큰입니다")
-    //     console.log(`${process.env.APP_ID}|${process.env.APP_TOKEN}`)
-    // }
     return {
         uri: verifyUri, // 요청을 보낼 페이스북 주소
         qs: {
@@ -33,22 +27,51 @@ function verifyToken(input_token) {
     console.log("verifying token...")
     return new Promise((resolve, reject) => {
         request.get(getRequestOptions(input_token), (err, res, body) => {
-            if (!err && res.statusCode == 200) {
-                var jsonBody = JSON.parse(res.body)
+            var jsonBody = JSON.parse(res.body)
+            console.warn(jsonBody)
+
+            if (!err && res.statusCode == 200 && jsonBody.data.user_id) {
                 console.warn(jsonBody)
                 resolve(jsonBody.data.user_id)
             }
+            else if(!err && res.statusCode == 200) {
+                reject({err: jsonBody.data.error, statusCode: 190})
+            }
             else {
-                console.error(err)
-                reject(err)
+                reject({err, statusCode: 404})
             }
         }) 
     })
 }
 
+function fakeVerifyToken(input_token) {
+    console.log("(test) verifying token...")
+    return new Promise((resolve, reject) => {
+        switch (input_token) {
+            case 'my_token':
+                resolve('userIdExample')
+                break
+
+            case 'new_token':
+                resolve('newUserIdExample')
+                break
+
+            case 'nickname_token':
+                resolve('aaa')
+                break
+
+            default:
+                reject({err: "토큰이 유효하지 않습니다", statusCode: 404})
+                break
+        }
+    })
+}
+
+
 function login(userId) {
     console.log("user id: ", userId)
     // TODO DB에서 userId 조회하기
+
 
     // 없으면 새로운 유저 생성
 
@@ -57,7 +80,8 @@ function login(userId) {
 
 const AuthAPI = {
     verifyToken,
-    login
+    login,
+    fakeVerifyToken
 }
 
 module.exports = AuthAPI

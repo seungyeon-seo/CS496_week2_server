@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 
-mongoose.connect('mongodb://localhost/immersion', {
-  keepAlive: true,
-  useNewUrlParser: true,
-  useUnifiedTopology: true
+mongoose.connect('mongodb://retroinspect:1234@localhost:27017', {
+    dbName: 'immersion',
+    keepAlive: true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 });
 
 var db = mongoose.connection
