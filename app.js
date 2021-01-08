@@ -1,25 +1,30 @@
-const express = require('express')
-const app = express()
-const routes = require('./routes')
-const wordRouter = require('./routes/word')
-const path = require('path')
-const router = express.Router()
+const express = require("express");
+const app = express();
+const bodyParser = require("body-parser");
+const PORT = process.env.PORT || 3000;
+const db = require("./models/");
 
-const port = 80
+app.use(bodyParser.json());
 
-// 어플리케이션 설정
+function success(res, payload) {
+  return res.status(200).json(payload);
+}
 
+const postRouter = require("./routes/post")
+const indexRouter = require("./routes/index")
+const userRouter = require("./routes/userry")
 
-app.get('/hello', function(req, res) {
-    res.json({msg: "hello world"})
-})
+app.use('/', indexRouter)
+app.use('/posts', postRouter)
+app.use('/user', userRouter)
 
-// app.get('/', function(req, res) {
-//     res.render('index', { title: '간단한 ToDo 리스트 예제 실습' });
-//   })
-app.use('/word', wordRouter)
+app.use((err, req, res, next) => {
+  return res.status(err.status || 400).json({
+    status: err.status || 400,
+    message: err.message || "요청(request)을 처리하는데 오류가 발생했습니다"
+  });
+});
 
-app.listen(port, () => {
-    console.log(`Example app listening at http://192.249.18.224`)
-})
-
+app.listen(PORT, () => {
+  console.log(`listening on port ${PORT}`);
+});
