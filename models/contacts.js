@@ -5,9 +5,9 @@ const contactSchema = new mongoose.Schema({
     fullName: { type: String, required: true, unique: true },
     phone: { type: String, required: true, unique: true },
     lookup: { type: String, required: true, unique: true },
-    personId: { type: Long, required: true, unique: true },
+    personId: { type: String, required: true, unique: true },
     image: { type: String, required: false, unique: false },
 })
-contactSchema.index({ fullName: 1, phone: 1 });
+// contactSchema.index({ fullName: 1, phone: 1 });
 
-module.exports = mongoose.model('Contact', contactSchema);
+module.exports = mongoose.model('contacts', contactSchema);
