@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 const PORT = process.env.PORT || 3000;
 
 // [CONFIGURE ROUTER]
-var authRouter = require('./routes/auth')(app)
+var authRouter = require('./routes/user')(app)
 // var router = require('./routes')(app, db.Post, db.User)
 
 // [RUN SERVER]

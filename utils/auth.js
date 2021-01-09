@@ -70,12 +70,7 @@ function fakeVerifyToken(input_token) {
 
 function login(userId) {
     console.log("user id: ", userId)
-    // TODO DB에서 userId 조회하기
-
-
-    // 없으면 새로운 유저 생성
-
-    // 있으면 유저 정보
+    // TODO routes에 있는거 리팩토링
 }
 
 const AuthAPI = {
