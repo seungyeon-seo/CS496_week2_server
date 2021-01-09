@@ -76,7 +76,7 @@ function login(userId) {
 const AuthAPI = {
     verifyToken,
     login,
-    fakeVerifyToken
+    fakeVerifyToken,
 }
 
 module.exports = AuthAPI
