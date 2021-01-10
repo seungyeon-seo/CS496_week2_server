@@ -17,10 +17,10 @@ app.use(bodyParser.json());
 const PORT = process.env.PORT || 3000;
 
 // [CONFIGURE ROUTER]
+// TODO move to index router
 var authRouter = require('./routes/user')(app)
-// var router = require('./routes')(app, db.Post, db.User)
 var imageRouter = require('./routes/image')(app)
-
+var groupRouter = require('./routes/group')(app)
 
 // [RUN SERVER]
 var server = app.listen(PORT, () => {

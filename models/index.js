@@ -18,5 +18,5 @@ db.once('open', function () {
 mongoose.set('debug', true);
 mongoose.Promise = Promise;
 
-module.exports.Post = require("./post");
 module.exports.User = require("./user");
+module.exports.Group = require("./group")

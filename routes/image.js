@@ -1,9 +1,8 @@
 const multer = require("multer");
 const path = require("path");
-const crypto = require("crypto");
 const StatusCode = require("../utils/statusCode");
 const fs = require("fs");
-const { dirname } = require("path");
+const { User } = require("../models");
 
 const form =
     "<!DOCTYPE HTML><html><body>" +
@@ -46,22 +45,20 @@ module.exports = (app) => {
     });
 
     // 파일 업로드
-    app.post("/upload", upload.single("upload"), (req, res) => {
+    app.post("/upload/:userId", upload.single("upload"), (req, res) => {
         console.log(`파일: `, req.file);
+        console.log(`UserId: ${req.params.userId}`)
+        User.findOneAndUpdate(
+            { id: req.params.userId },
+            { profilePath: req.file.path }
+        )
+            .exec()
+            .catch((reason) => {
+                console.log(" 알 수 없는 에러 발생:  ", reason);
+                return res.status(StatusCode.InternalServerError).send(reason);
+            });
+
         res.json({url: `/upload/${req.file.filename}`})
-        // return res.redirect("/upload/" + req.file.filename);
-        // return res.status(StatusCode.OK).send("파일 업로드 완료!");
     });
 
-    const upload2 = multer()
-    
-
-    // app.get("/upload/:imageStorage", (req, res) => {
-    //     file = req.params.imageStorage;
-    //     console.log(`이미지 데이터를 저장할 파일 이름: `, file);
-    //     console.log(`현재 위치: ${__dirname}`);
-    //     const img = fs.readFileSync(__dirname + "/upload/" + file);
-    //     res.writeHead(StatusCode.OK, { "Content-Type": "image/png" });
-    //     res.end(img, "binary");
-    // });
 };

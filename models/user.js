@@ -14,8 +14,16 @@ const userSchema = new mongoose.Schema({
     },
 
     posts: [{
-        type: mongoose.Schema.Types.ObjectId,
-    }]
+        type: String,
+    }],
+
+    profilePath: {
+        type: String,
+    },
+
+    groupId: {
+        type: String
+    }
 
 })
 
@@ -26,6 +34,7 @@ userSchema.pre('save', function(next) {
     if (!this.posts) { // posts 필드가 없으면 추가
       this.posts = []
     }
+    // TODO 디폴트 프로필 사진 설정해주기
     next();
 });
 
