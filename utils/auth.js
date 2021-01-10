@@ -35,10 +35,10 @@ function verifyToken(input_token) {
                 resolve(jsonBody.data.user_id)
             }
             else if(!err && res.statusCode == 200) {
-                reject({err: jsonBody.data.error, statusCode: 190})
+                reject(jsonBody.data.error)
             }
             else {
-                reject({err, statusCode: 404})
+                reject(err)
             }
         }) 
     })
