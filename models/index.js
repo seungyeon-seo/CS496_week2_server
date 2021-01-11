@@ -20,3 +20,4 @@ mongoose.Promise = Promise;
 
 module.exports.User = require("./user");
 module.exports.Group = require("./group")
+module.exports.Contact = require("./contact");

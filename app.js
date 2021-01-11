@@ -13,6 +13,10 @@ const db = require("./models/");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// [CONFIGURE APP TO USE Static File Service]
+app.use(express.static('public'))
+
+
 // [CONFIGURE SERVER PORT]
 const PORT = process.env.PORT || 3000;
 
@@ -21,6 +25,7 @@ const PORT = process.env.PORT || 3000;
 var authRouter = require('./routes/user')(app)
 var imageRouter = require('./routes/image')(app)
 var groupRouter = require('./routes/group')(app)
+var contactRouter = require('./routes/contact')(app)
 
 // [RUN SERVER]
 var server = app.listen(PORT, () => {
