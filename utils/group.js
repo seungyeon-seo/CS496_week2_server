@@ -1,4 +1,6 @@
-const { Group } = require("../models");
+const { Group, User } = require("../models");
+const StatusCode = require("./statusCode");
+const ResultCode = require("./resultCode");
 
 const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -33,7 +35,6 @@ function generateCode() {
     });
 }
 
-// TODO 유저 스키마도 수정하기
 function createGroup(name, code, userId) {
     return new Promise((resolve, reject) => {
         console.log("code: " + code + "인 그룹을 만드는 중...");
@@ -46,27 +47,85 @@ function createGroup(name, code, userId) {
             if (err) reject("그룹을 DB에 저장할 수 없습니다\n" + err);
             return resolve(group);
         });
-    });
+    })
+        .then((group) => {
+            return User.updateOne(
+                {
+                    id: userId,
+                },
+                { $set: { groupCode: code } }
+            ).exec();
+        })
+        .catch((reason) => new Promise((resolve, reject) => reject(reason)));
 }
 
-
-// TODO 유저 스키마도 수정하기
 function joinGroup(code, userId) {
-    return Group.updateOne({ code: code }, { $addToSet: { users: [userId] } })
+    return User.updateOne(
+        {
+            id: userId,
+        },
+        { $set: { groupCode: code } }
+    )
         .exec()
         .then((result) => {
-            return new Promise((resolve, reject) => resolve(result))
+            console.log(result);
+            return new Promise((resolve, reject) => {
+                if (result.nModified == 1)
+                    return resolve(ResultCode.UserJoinedGroup);
+                else if (result.n == 0) return reject(ResultCode.NoSuchUser);
+                else return reject(ResultCode.CannotJoinToJoinedGroup);
+            });
         })
-        .catch(reason => new Promise((resolve, reject) => reject(reason)))
+        .then((resultCode) => {
+            return Group.updateOne(
+                { code: code },
+                { $addToSet: { users: [userId] } }
+            ).exec();
+        })
+        .then((result) => {
+            return new Promise((resolve, reject) => {
+                if (result.nModified == 1)
+                    return resolve(ResultCode.GroupAcceptedUser);
+                else if (result.n == 0) return reject(ResultCode.GroupNotFound);
+                else return reject(ResultCode.CannotJoinToJoinedGroup);
+            });
+        })
+        .catch((reason) => new Promise((resolve, reject) => reject(reason)));
 }
 
-
-// TODO 유저 스키마도 수정하기
 function exitGroup(code, userId) {
-    return Group.updateOne(
-        { code: code },
-        { $pull: { users: userId} }
-    ).exec();
+    return User.updateOne(
+        {
+            id: userId,
+            groupCode: code,
+        },
+        { $set: { groupCode: 0 } }
+    ).exec()
+    .then((result) => {
+        console.log(result)
+        return new Promise((resolve, reject) => {
+        if (result.nModified == 1)
+            return resolve(ResultCode.UserLeftGroup)
+        else if (result.n == 0)
+            return reject(ResultCode.NoSuchUser)
+        else
+            return reject(ResultCode.CannotExitFromUnjoinedGroup);
+    })})
+    .then( resultCode => {
+        return Group.updateOne({ code: code }, { $pull: { users: userId } })
+        .exec()
+    })
+    .then((result) => {
+        return new Promise((resolve, reject) => {
+        if (result.nModified == 1)
+            return resolve(ResultCode.GroupEjectedUser)
+        else if (result.n == 0)
+            return reject(ResultCode.GroupNotFound)
+        else
+            return reject(ResultCode.CannotExitFromUnjoinedGroup);
+    })})
+    .catch((reason) => new Promise((resolve, reject) => reject(reason)));
+
 }
 
 const GroupAPI = {
