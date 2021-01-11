@@ -1,43 +1,39 @@
-// DEFINE MODEL
-var Contact = require('../models/contacts');
-module.exports = function(app) {
+const {User, Contact} = require("../models");
+const StatusCode = require("../utils/statusCode");
+const ResultCode = require("../utils/resultCode");
 
+
+module.exports = function(app) {
     // 모든 연락처를 조회
-    app.get('/test/contact/get', (req, res) => {
-        Contact.find(function(err, contact){
-            if(err) {
-                console.error(err)
-                res.status(500).json({result: 0})
-                return
-            }
-            res.status(200).json({result: 1})
-        })
+    app.get('/contact/:userId', async (req, res) => {
+        const contactData = await User.findOne({ id: req.params.userId })
+            .populate("contacts")
+            .exec()
+        
+        return res.status(StatusCode.OK).json(contactData.contacts)
     })
 
     // 연락처 추가
-    app.post('/test/contact/insert', (req, res) => {
-        // Init contact variable
-        var contact = new Contact()
+    app.post('/contact/insert/:userId', (req, res) => {
+        let contact = new Contact()
         contact.fullName = req.body.fullName
         contact.phone = req.body.phone
-        contact.lookup = req.body.lookup
         contact.personId = req.body.personId
         contact.image = req.body.image
+
         // Save content and Send response to client
-        contact.save(function(err){
-            if(err) {
-                console.error(err)
-                res.status(500).json({result: 0})
-                return
-            }
-            res.status(201).json({result: 1})
-        })
-        // json 내용 바꾸기
-    })
-    app.put('/test/contact/update/status', (req, res) => {
-        console.log("in put function")
-        Contact.updateOne({phone: req.body.phone}, { status: req.body.status })
-        console.log("success")
-        res.status(201).json({result: 1})
+
+        contact
+            .save()
+            .then(() =>
+                User.updateOne(
+                    { id: req.params.userId },
+                    { $addToSet: { contacts: [contact._id] } }
+                ).exec()
+            )
+            .then(() => res.redirect(`/contact/${req.params.userId}`))
+            .catch((reason) =>
+                res.status(StatusCode.InternalServerError).send(reason)
+            );
     })
 }

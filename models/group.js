@@ -1,4 +1,7 @@
 const mongoose = require("mongoose");
+const { userSchema } = require("./user");
+
+mongoose.model("User", userSchema);
 
 const groupSchema = new mongoose.Schema({
     name: {
@@ -11,11 +14,7 @@ const groupSchema = new mongoose.Schema({
         required: true,
     },
 
-    users: [
-        {
-            type: String,
-        },
-    ],
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // 유저 object id 저장
 });
 
 groupSchema.pre("save", function (next) {
@@ -28,4 +27,4 @@ groupSchema.pre("save", function (next) {
 
 const groupModel = mongoose.model("group", groupSchema);
 
-module.exports = groupModel;
+module.exports = {groupModel, groupSchema};

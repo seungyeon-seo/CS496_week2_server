@@ -18,6 +18,13 @@ db.once('open', function () {
 mongoose.set('debug', true);
 mongoose.Promise = Promise;
 
-module.exports.User = require("./user");
-module.exports.Group = require("./group")
-module.exports.Contact = require("./contact");
+
+const userDB = require("./user")
+const groupDB = require("./group")
+const contactDB = require('./contact')
+
+module.exports = {
+  User: userDB.userModel,
+  Group: groupDB.groupModel,
+  Contact: contactDB.contactModel
+}

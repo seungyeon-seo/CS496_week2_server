@@ -60,8 +60,12 @@ function fakeVerifyToken(input_token) {
                 resolve('aaa')
                 break
 
-            default:
+            case 'invalid_token':
                 reject({err: "토큰이 유효하지 않습니다", statusCode: 404})
+                break;
+
+            default:
+                resolve(input_token)
                 break
         }
     })
