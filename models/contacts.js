@@ -7,6 +7,9 @@ const contactSchema = new mongoose.Schema({
     lookup: { type: String, required: true, unique: true },
     personId: { type: String, required: true, unique: true },
     image: { type: String, required: false, unique: false },
+    groupId: { type: Number, required: false, unique: false },
+    status: { type: Number, required: false, unique: false },
+    location: { type: String, required: false, unique: false } 
 })
 // contactSchema.index({ fullName: 1, phone: 1 });
 
