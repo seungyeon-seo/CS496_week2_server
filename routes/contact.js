@@ -8,7 +8,7 @@ module.exports = function(app) {
                 res.status(500).json({result: 0})
                 return
             }
-            res.status(200).json(contact);
+            res.status(200).json({result: 1})
         })
     })
     app.post('/test/contact/insert', (req, res) => {
@@ -29,5 +29,11 @@ module.exports = function(app) {
             res.status(201).json({result: 1})
         })
         // json 내용 바꾸기
+    })
+    app.put('/test/contact/update/status', (req, res) => {
+        console.log("in put function")
+        Contact.updateOne({phone: req.body.phone}, { status: req.body.status })
+        console.log("success")
+        res.status(201).json({result: 1})
     })
 }
