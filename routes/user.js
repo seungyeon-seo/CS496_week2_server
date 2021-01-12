@@ -51,9 +51,10 @@ module.exports = function (app) {
             });
     });
 
-    app.get("/user/register/:token/:nickName", (req, res) => {
+    app.get("/user/register/:token/:nickName/:phone", (req, res) => {
         const token = req.params.token;
         let user_id;
+        console.log("register...")
         // AuthAPI.verifyToken(token)
             AuthAPI.fakeVerifyToken(token)
             .then((id) => {
@@ -62,6 +63,7 @@ module.exports = function (app) {
                 return User.findOne({ id: id }).exec();
             })
             .then((user) => {
+                console.log(`유저 가입 중 - id: ${user_id}`);
                 if (user)
                     return res
                         .status(StatusCode.Conflict)
@@ -71,6 +73,8 @@ module.exports = function (app) {
                     user.nickName = req.params.nickName;
                     user.id = user_id;
                     user.contacts = []
+                    user.phone = req.params.phone
+                    user.groupCode = req.params.groupCode
                     user.save((err) => {
                         if (err)
                             throw new Error(
@@ -108,20 +112,43 @@ module.exports = function (app) {
     });
 
 
-    // 유저의 위치, status를 업데이트
-    app.get("/user/sync/:userId/:status/:latitude/:longitude", (req, res) => {
+    app.get("/user/location/:userId/:latitude/:longitude", (req, res) => {
         User.findOneAndUpdate(
             { id: req.params.userId },
             {
-                status: req.params.status,
                 latitude: req.params.latitude,
                 longitude: req.params.longitude,
             }
         )
             .exec()
+            .then( () => User.findOne({ id: req.params.userId }).exec())
+            .then( user =>{ 
+                console.log("유저 location 업데이트");
+                return res.status(StatusCode.OK).json(user)})
             .catch((reason) => {
                 console.log(" 알 수 없는 에러 발생:  ", reason);
                 return res.status(StatusCode.InternalServerError).send(reason);
             });
     });
+
+
+    app.get("/user/status/:userId/:status", (req, res) => {
+        console.log("유저 status 업데이트");
+                User.findOneAndUpdate(
+                    { id: req.params.userId },
+                    {
+                        status: req.params.status
+                    }
+                )
+                    .exec()
+                    .then(() => User.findOne({ id: req.params.userId }).exec())
+                    .then((user) => res.status(StatusCode.OK).json(user))
+                    .catch((reason) => {
+                        console.log(" 알 수 없는 에러 발생:  ", reason);
+                        return res
+                            .status(StatusCode.InternalServerError)
+                            .send(reason);
+                    });
+
+    })
 };

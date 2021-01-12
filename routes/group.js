@@ -14,6 +14,7 @@ module.exports = function (app) {
     app.get("/group/create/:name/:userId", (req, res) => {
         const name = req.params.name;
         const userId = req.params.userId;
+        console.log("그룹 만드는 중");
 
         let newGroupCode;
         let userOId;
@@ -38,8 +39,9 @@ module.exports = function (app) {
                 console.log("그룹 만들어서 넣는중");
                 group.save();
                 console.log(`그룹: ${group}`);
-                return res.status(StatusCode.OK).json(group);
+                return User.findOne({id: userId}).exec()
             })
+            .then(user => res.status(StatusCode.OK).json(user))
             .catch((reason) => {
                 console.error(" 에러 발생:  ", reason);
                 return res.status(StatusCode.InternalServerError).send(reason);
@@ -48,6 +50,7 @@ module.exports = function (app) {
 
     // 그룹에 참여
     app.get("/group/join/:code/:userId", (req, res) => {
+        console.log("그룹 참여 중")
         const code = req.params.code;
         const userId = req.params.userId;
         let userOId;
@@ -72,8 +75,8 @@ module.exports = function (app) {
                     { $addToSet: { users: [userOId] } }
                 ).exec();
             })
-            .then((result) => Group.findOne({ code: code }))
-            .then((group) => res.status(StatusCode.OK).json(group))
+            .then((result) => User.findOne({ id: userId }))
+            .then((user) => res.status(StatusCode.OK).json(user))
             .catch((reason) => {
                 if (reason == ResultCode.GroupNotFound)
                     return res

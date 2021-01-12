@@ -17,11 +17,7 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
 
-    phoneNum: {
-        type: String,
-    },
-
-    location: {
+    phone: {
         type: String,
     },
 
@@ -50,6 +46,7 @@ const userSchema = new mongoose.Schema({
         type: String,
     },
 });
+
 
 userSchema.post('find', function(result) {
     console.log('저장 완료', result);

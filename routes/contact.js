@@ -21,7 +21,7 @@ module.exports = function(app) {
         contact.personId = req.body.personId
         contact.image = req.body.image
 
-        // Save content and Send response to client
+        // Save content and Send response to clien0t
 
         contact
             .save()

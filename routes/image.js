@@ -50,15 +50,29 @@ module.exports = (app) => {
         console.log(`UserId: ${req.params.userId}`)
         User.findOneAndUpdate(
             { id: req.params.userId },
-            { profilePath: req.file.path }
+            { profilePath: req.file.filename }
         )
             .exec()
+            .then((result) => 
+                User.findOne({id: req.params.userId}).exec()
+            )
+            .then(user => res.json(user))
             .catch((reason) => {
                 console.log(" 알 수 없는 에러 발생:  ", reason);
                 return res.status(StatusCode.InternalServerError).send(reason);
             });
+        
+    });
 
-        res.json({url: `/upload/${req.file.filename}`})
+    app.get("/image/:profileName", (req, res) => {
+        const profileName = req.params.profileName;
+        console.log(profileName);
+        const img = fs.readFileSync(
+            "/home/ubuntu/CS496_week2_server/upload/" + profileName
+        );
+        // 저장하기위한 이미지 타입
+        res.writeHead(200, { "Content-Type": "image/png" });
+        res.end(img, "binary");
     });
 
 };
